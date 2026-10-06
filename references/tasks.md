@@ -6,10 +6,22 @@
 日次ログ（[record-and-sync.md](record-and-sync.md)）は「今日何をしたか」。  
 ハンドオフ（[handoff.md](handoff.md)）は薄いポインタでもよい。**作業状態の正本はタスクファイル。**
 
-## 担当の分け方（このデータリポの方針）
+## 担当の分け方（最終・ai-log-data）
 
-- 日次の生活・市況・通勤・監視・fxnyao など → **Grok Bot**（`host: grokbot`、係ごとに `bot`）
-- プログラム／リポ／スクリプト／Issue・Discord 実装など → **Hermes**（`host: hermes`, `bot: main`）
+- **仕事 → Hermes**（`host: hermes`, `bot: main`, `owner: hermes-main`）  
+  AlphaInsiders・Astran・コード／スクリプト・work-log。
+- **日常生活 → Grok Bot**（`host: grokbot` + 係 `bot`）  
+  通勤（`yajiuma`）、ゆりかもめ（`shirabe`）、健康・私生活。
+
+### 棚卸し（inventory）
+
+各ボットは定期的に `tasks/INDEX.md` と自分のタスクを読む。`status` と「次にやること」を更新し、新規に引き受けた仕事はタスク追加、古いものはフラグする。
+
+```bash
+git -C ~/ai-log-data add -- tasks/INDEX.md tasks/<id>.md
+git -C ~/ai-log-data commit -m "task(<host>): inventory <bot> YYYY-MM-DD"
+git -C ~/ai-log-data push
+```
 
 ## ソース接頭辞
 
@@ -33,9 +45,9 @@ commit は `task(<host>): <id> <summary>`。
 id: fxnyao-weekly
 title: fxnyao 週次解禁・収集
 status: active   # active | paused | todo | done
-host: grokbot    # grokbot | hermes | …
-bot: sosui       # ホスト上のボット slug（総帥=sosui, 経済専門家=keizai, …）
-owner: grokbot-sosui   # 必ず <host>-<bot>（または unassigned）
+host: hermes     # hermes = 仕事 / grokbot = 生活
+bot: main        # hermes-main → bot: main。生活側は yajiuma / shirabe 等
+owner: hermes-main   # 必ず <host>-<bot>（または unassigned）
 cadence: "Mon 07:30 JST"
 updated: 2026-10-06
 updated_by: grokbot-sosui
