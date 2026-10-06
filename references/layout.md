@@ -8,7 +8,7 @@
 |---|---|
 | 日次ファイル | `daily/YYYY-MM-DD/<host>-<bot>.md` |
 | ハンドオフ | `handoffs/YYYY-MM-DD-<from-host>-to-<to-host>.md` |
-| タスク actor | `<host>-<bot>`（owner / updated_by / 履歴） |
+| タスク actor | front matter に `host` / `bot`。owner / updated_by / 履歴は `<host>-<bot>` |
 | commit | `<type>(<host>): <summary>`（type: log/task/handoff/docs/init） |
 
 `host` 例: `grokbot`, `hermes`, `cursor`, `local-laptop`。`bot` 例: `sosui`, `main`。

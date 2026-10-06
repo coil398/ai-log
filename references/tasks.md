@@ -6,9 +6,14 @@
 日次ログ（[record-and-sync.md](record-and-sync.md)）は「今日何をしたか」。  
 ハンドオフ（[handoff.md](handoff.md)）は薄いポインタでもよい。**作業状態の正本はタスクファイル。**
 
+## 担当の分け方（このデータリポの方針）
+
+- 日次の生活・市況・通勤・監視・fxnyao など → **Grok Bot**（`host: grokbot`、係ごとに `bot`）
+- プログラム／リポ／スクリプト／Issue・Discord 実装など → **Hermes**（`host: hermes`, `bot: main`）
+
 ## ソース接頭辞
 
-`owner` / `updated_by` / `履歴` の行為者は **`<host>-<bot>`**（例: `hermes-main`, `grokbot-sosui`）。未割当は `unassigned`。  
+`host` と `bot` を front matter に書き、`owner` / `updated_by` / `履歴` は **`<host>-<bot>`**（例: `hermes-main`, `grokbot-sosui`, `grokbot-keizai`）。未割当は `unassigned`。  
 commit は `task(<host>): <id> <summary>`。
 
 ## ファイル
@@ -28,7 +33,9 @@ commit は `task(<host>): <id> <summary>`。
 id: fxnyao-weekly
 title: fxnyao 週次解禁・収集
 status: active   # active | paused | todo | done
-owner: hermes-main
+host: grokbot    # grokbot | hermes | …
+bot: sosui       # ホスト上のボット slug（総帥=sosui, 経済専門家=keizai, …）
+owner: grokbot-sosui   # 必ず <host>-<bot>（または unassigned）
 cadence: "Mon 07:30 JST"
 updated: 2026-10-06
 updated_by: grokbot-sosui
@@ -49,10 +56,10 @@ updated_by: grokbot-sosui
 1. `git -C ~/ai-log-data pull --rebase`
 2. `tasks/INDEX.md` を確認。必要なら `context/` を読む
 3. `tasks/<id>.md` を編集:
-   - `owner` / `updated_by` を自分の `<host>-<bot>` に
+   - `host` / `bot` / `owner`（=`<host>-<bot>`）/ `updated_by` を自分に合わせる
    - `updated` を今日（Asia/Tokyo）に
    - `履歴` に pickup 行を追記
-4. INDEX の owner 列も合わせる
+4. INDEX の host / bot / owner 列も合わせる
 
 ```bash
 git -C ~/ai-log-data add -- "tasks/<id>.md" "tasks/INDEX.md"
