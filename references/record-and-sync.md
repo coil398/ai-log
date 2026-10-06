@@ -7,6 +7,7 @@
 - データ根: `~/ai-log-data`
 - タイムゾーン: Asia/Tokyo
 - 触ったファイルだけを stage する（`git add -A` は使わない）
+- 出所: **`<host>-<bot>`**（ファイル名・front matter・commit に載せる）
 
 ## 日次ログの追記
 
@@ -20,13 +21,13 @@ git -C ~/ai-log-data pull --rebase
 
 ```bash
 DATE=$(TZ=Asia/Tokyo date +%Y-%m-%d)
-TIME=$(TZ=Asia/Tokyo date +%H:%M)
-AGENT=<agent-name>
-FILE=~/ai-log-data/daily/$DATE/$AGENT.md
+HOST=<host>   # e.g. hermes
+BOT=<bot>     # e.g. main
+FILE=~/ai-log-data/daily/$DATE/${HOST}-${BOT}.md
 mkdir -p ~/ai-log-data/daily/$DATE
 ```
 
-3. ファイルが無ければ front matter 付きで新規作成。あれば末尾に追記:
+3. ファイルが無ければ front matter（`date` / `host` / `bot` / `agent: <host>-<bot>` / `type: daily-work-log`）付きで新規作成。あれば末尾に追記:
 
 ```markdown
 ---
@@ -36,33 +37,33 @@ mkdir -p ~/ai-log-data/daily/$DATE
 （本文）
 ```
 
-4. 補助scriptを使う場合（推奨）:
+4. 補助 script（推奨）:
 
 ```bash
 python3 "$SKILL_DIR/scripts/new_entry.py" \
   --repo ~/ai-log-data \
-  --agent "$AGENT" \
+  --host "$HOST" \
+  --bot "$BOT" \
   --title "<title>" \
   --body "<body>"
 ```
 
-scriptは pull → 書き込み → 触ったファイルだけ add/commit → push まで行う。`--no-commit` / `--no-push` で段階を止められる。
+script は pull → 書き込み → 触ったファイルだけ add/commit → push まで行う。`--no-commit` / `--no-push` で段階を止められる。
 
 ## commitメッセージ
 
-- 日次・トピック: `log: YYYY-MM-DD <summary>`
-- タスク: `task: <id> <summary>`（[tasks.md](tasks.md)）
-- ハンドオフ: `handoff: YYYY-MM-DD <summary>`（[handoff.md](handoff.md)）
+- 日次・トピック: `log(<host>): YYYY-MM-DD <summary>`
+- タスク: `task(<host>): <id> <summary>`（[tasks.md](tasks.md)）
+- ハンドオフ: `handoff(<host>): YYYY-MM-DD <summary>`（[handoff.md](handoff.md)）
+- ドキュメント: `docs(<host>): <summary>`
 
 ## 手動で commit / push する場合
 
 ```bash
-git -C ~/ai-log-data add -- "daily/$DATE/$AGENT.md"
-git -C ~/ai-log-data commit -m "log: $DATE <summary>"
+git -C ~/ai-log-data add -- "daily/$DATE/${HOST}-${BOT}.md"
+git -C ~/ai-log-data commit -m "log($HOST): $DATE <summary>"
 git -C ~/ai-log-data push
 ```
-
-複数ファイルを触った場合も、**実際に書いたパスだけ**を `git add` する。
 
 ## 失敗時
 

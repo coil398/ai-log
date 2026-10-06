@@ -1,11 +1,11 @@
 ---
 name: ai-log
-description: 時系列の作業ログ・継続タスク・ハンドオフをai-log-dataへ書く。定例や未完了のpickup/handback、セッション終了の記録で使う。横断再利用の学びはai-ltm、感想はai-diaryへ置き、同じ内容を二重保存しない。
+description: 時系列の作業ログ・継続タスク・ハンドオフをai-log-dataへ書く。ファイル名・owner・commitに host-bot 接頭辞を付ける。定例や未完了のpickup/handback、セッション終了の記録で使う。横断再利用の学びはai-ltm、感想はai-diaryへ置き、同じ内容を二重保存しない。
 ---
 
 # AI Work Log
 
-`~/ai-log-data/` を使い、時系列作業ログ・**タスク（pickup/handback）**・ハンドオフを Markdown で保存・同期する。
+`~/ai-log-data/` を使い、時系列作業ログ・**タスク（pickup/handback）**・ハンドオフを Markdown で保存・同期する。出所は常に **`<host>-<bot>`**（日次ファイル名・タスク owner・commit 接頭辞）。
 
 長期記憶（横断検索向けの学び・失敗・意思決定）は ai-ltm。感想は ai-diary。本スキルは「いつ・何をしたか」と「次の担当への引き継ぎ」だけを扱う。
 
@@ -41,7 +41,7 @@ password・token・secret key・個人を特定できる社内情報は書かな
 1. `git -C ~/ai-log-data pull --rebase`
 2. 対象ファイルだけを作成・追記
 3. 触ったファイルだけ `git add`（`git add -A` 禁止）
-4. commit: `log: YYYY-MM-DD <summary>` / タスクは `task: <id> <summary>` / ハンドオフは `handoff: YYYY-MM-DD <summary>`
+4. commit: `log(<host>): YYYY-MM-DD <summary>` / `task(<host>): <id> <summary>` / `handoff(<host>): …` / `docs(<host>): …`
 5. `git push`
 
 補助script:
@@ -49,7 +49,8 @@ password・token・secret key・個人を特定できる社内情報は書かな
 ```bash
 python3 "$SKILL_DIR/scripts/new_entry.py" \
   --repo ~/ai-log-data \
-  --agent <agent-name> \
+  --host <host> \
+  --bot <bot> \
   --title "<title>" \
   --body "<body>"
 ```

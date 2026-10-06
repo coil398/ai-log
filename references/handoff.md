@@ -1,10 +1,10 @@
 # ハンドオフ
 
-別セッション・別エージェントへ作業を渡すときだけ読む。
+別セッション・別ホスト／ボットへ作業を渡すときだけ読む。
 
 ## いつ書くか
 
-- 担当エージェントが交代する
+- 担当ホスト／ボットが交代する
 - 長い離席の前に、再開条件を残す必要がある
 - 日次ログだけでは次の担当が再開できない
 
@@ -13,10 +13,10 @@
 ## ファイル
 
 ```
-~/ai-log-data/handoffs/YYYY-MM-DD-<slug>.md
+~/ai-log-data/handoffs/YYYY-MM-DD-<from-host>-to-<to-host>.md
 ```
 
-`<slug>` は短い英語またはローマ字（例: `hermes-handoff`, `release-cutover`）。
+例: `2026-10-06-grokbot-to-hermes.md`。詳細ディレクトリを置く場合も同じ stem にする。
 
 ## 推奨構成
 
@@ -24,8 +24,10 @@
 ---
 date: YYYY-MM-DD
 type: handoff
-from: <agent-or-session>
-to: <agent-or-session-or-anyone>
+from: <host>-<bot>
+to: <host>-<bot-or-anyone>
+from_host: <host>
+to_host: <host>
 status: open
 ---
 
@@ -33,15 +35,11 @@ status: open
 
 ## 現状
 
-（いま動いているもの・止まった地点）
+（いま動いているもの・止まった地点。詳細は tasks へのリンク）
 
-## やったこと
+## 渡したタスク
 
-- …
-
-## 次にやること
-
-- [ ] …
+- [ ] tasks/<id>.md …
 
 ## ブロッカー / 注意
 
@@ -49,17 +47,16 @@ status: open
 
 ## 参照
 
-- 関連PR・issue・パス（公開可能なもの）
+- 関連PR・issue・パス
 ```
 
 ## 同期
 
 ```bash
 git -C ~/ai-log-data pull --rebase
-# handoffs/YYYY-MM-DD-<slug>.md を作成
-git -C ~/ai-log-data add -- "handoffs/YYYY-MM-DD-<slug>.md"
-git -C ~/ai-log-data commit -m "handoff: YYYY-MM-DD <summary>"
+git -C ~/ai-log-data add -- "handoffs/YYYY-MM-DD-<from-host>-to-<to-host>.md"
+git -C ~/ai-log-data commit -m "handoff(<from-host>): YYYY-MM-DD to <to-host>"
 git -C ~/ai-log-data push
 ```
 
-日次ログにも「ハンドオフを書いた」旨を一行残してよいが、本文の重複は避ける。
+日次ログにも「ハンドオフを書いた」旨を一行残してよいが、本文の重複は避ける。渡すタスクの `owner` も更新する。

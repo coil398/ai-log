@@ -61,6 +61,10 @@ git clone git@github.com:coil398/ai-log-data.git ~/ai-log-data
 | 感想・振り返り・日記調の記録 | [ai-diary](https://github.com/coil398/ai-diary) |
 | 今のcampaignだけの短期方針 | プロジェクト側の field-notes 等 |
 
+## ソース接頭辞
+
+複数ホスト／ボットが書く前提。日次は `daily/YYYY-MM-DD/<host>-<bot>.md`、タスクの owner / updated_by は `<host>-<bot>`、commit は `<type>(<host>): <summary>`（type: log/task/handoff/docs/init）。詳細は [references/layout.md](references/layout.md)。
+
 ## データレイアウト（要約）
 
 詳細は [references/layout.md](references/layout.md)。
@@ -69,13 +73,13 @@ git clone git@github.com:coil398/ai-log-data.git ~/ai-log-data
 ai-log-data/
   README.md
   tasks/INDEX.md + tasks/<id>.md
-  context/                      # 共有文脈
-  handoffs/YYYY-MM-DD-<slug>.md
-  daily/YYYY-MM-DD/<agent>.md
+  context/
+  handoffs/YYYY-MM-DD-<from-host>-to-<to-host>.md
+  daily/YYYY-MM-DD/<host>-<bot>.md
   topics/<topic>/…              # 任意
 ```
 
-日次ファイルは YAML front matter（`date` / `agent` / `type: daily-work-log`）を持ち、同一日内の追記は `---` で区切る。各セクション見出しは `## HH:MM JST <title>`。
+日次ファイルは YAML front matter（`date` / `host` / `bot` / `agent: <host>-<bot>` / `type: daily-work-log`）を持ち、同一日内の追記は `---` で区切る。各セクション見出しは `## HH:MM JST <title>`。
 
 ## 同期ルール（要約）
 
@@ -84,7 +88,7 @@ ai-log-data/
 1. `git pull --rebase`
 2. ファイルを書く / 追記する
 3. **触ったファイルだけ** `git add`（`git add -A` は使わない）
-4. commit: `log: YYYY-MM-DD <summary>`（タスクは `task: <id> <summary>`、ハンドオフは `handoff: YYYY-MM-DD <summary>`）
+4. commit: `log(<host>): YYYY-MM-DD <summary>`（タスクは `task(<host>): <id> <summary>`、ハンドオフは `handoff(<host>): …`）
 5. `git push`
 
 秘密情報（token・本番パスワード・個人を特定できる社内情報など）は保存しない。例外の扱いはプライベートなデータリポジトリ側の README のみに記す。
@@ -95,7 +99,8 @@ ai-log-data/
 SKILL_DIR="$(cd ~/.agents/skills/ai-log && pwd -P)"
 python3 "$SKILL_DIR/scripts/new_entry.py" \
   --repo ~/ai-log-data \
-  --agent hermes \
+  --host hermes \
+  --bot main \
   --title "作業の要約" \
   --body "やったこと・残件など"
 ```

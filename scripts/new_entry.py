@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import re
 import subprocess
 import sys
 from datetime import datetime
@@ -11,6 +12,7 @@ from pathlib import Path
 from zoneinfo import ZoneInfo
 
 JST = ZoneInfo("Asia/Tokyo")
+SLUG_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 
 
 def run(cmd: list[str], cwd: Path | None = None, check: bool = True) -> subprocess.CompletedProcess[str]:
@@ -42,6 +44,15 @@ def pull_rebase(repo: Path) -> None:
         raise SystemExit(f"git pull --rebase failed:\n{msg}")
 
 
+def check_slug(name: str, label: str) -> str:
+    value = name.strip().lower()
+    if not SLUG_RE.match(value):
+        raise SystemExit(
+            f"invalid {label} {name!r}: use ascii slug like grokbot, hermes, sosui, main"
+        )
+    return value
+
+
 def build_section(now: datetime, title: str, body: str) -> str:
     heading = f"## {now.strftime('%H:%M')} JST {title}".rstrip()
     text = body.strip()
@@ -50,8 +61,15 @@ def build_section(now: datetime, title: str, body: str) -> str:
     return f"{heading}\n"
 
 
-def write_entry(path: Path, date_str: str, agent: str, section: str) -> None:
+def write_entry(
+    path: Path,
+    date_str: str,
+    host: str,
+    bot: str,
+    section: str,
+) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
+    agent = f"{host}-{bot}"
     if path.exists():
         existing = path.read_text(encoding="utf-8")
         if not existing.endswith("\n"):
@@ -61,6 +79,8 @@ def write_entry(path: Path, date_str: str, agent: str, section: str) -> None:
     front = (
         "---\n"
         f"date: {date_str}\n"
+        f"host: {host}\n"
+        f"bot: {bot}\n"
         f"agent: {agent}\n"
         "type: daily-work-log\n"
         "---\n\n"
@@ -104,7 +124,17 @@ def commit_and_push(
 def main() -> None:
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("--repo", type=Path, default=Path.home() / "ai-log-data")
-    p.add_argument("--agent", required=True, help="agent id, e.g. hermes")
+    p.add_argument(
+        "--host",
+        required=True,
+        help="platform/machine slug, e.g. grokbot, hermes, cursor, local-laptop",
+    )
+    p.add_argument("--bot", required=True, help="bot ascii slug, e.g. sosui, main")
+    p.add_argument(
+        "--agent",
+        default="",
+        help="deprecated: ignored if --host/--bot set; kept for old callers",
+    )
     p.add_argument("--title", required=True)
     p.add_argument("--body", default="")
     p.add_argument("--message", default="", help="summary part of commit message")
@@ -113,6 +143,10 @@ def main() -> None:
     p.add_argument("--skip-pull", action="store_true")
     args = p.parse_args()
 
+    host = check_slug(args.host, "host")
+    bot = check_slug(args.bot, "bot")
+    agent = f"{host}-{bot}"
+
     repo = args.repo.expanduser().resolve()
     ensure_repo(repo)
     if not args.skip_pull:
@@ -120,13 +154,13 @@ def main() -> None:
 
     now = datetime.now(JST)
     date_str = now.strftime("%Y-%m-%d")
-    rel = f"daily/{date_str}/{args.agent}.md"
+    rel = f"daily/{date_str}/{agent}.md"
     path = repo / rel
     section = build_section(now, args.title, args.body)
-    write_entry(path, date_str, args.agent, section)
+    write_entry(path, date_str, host, bot, section)
 
     summary = args.message.strip() or args.title.strip()
-    message = f"log: {date_str} {summary}"
+    message = f"log({host}): {date_str} {summary}"
     commit_and_push(
         repo,
         rel,
