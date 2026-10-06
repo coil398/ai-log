@@ -51,6 +51,7 @@ scriptは pull → 書き込み → 触ったファイルだけ add/commit → p
 ## commitメッセージ
 
 - 日次・トピック: `log: YYYY-MM-DD <summary>`
+- タスク: `task: <id> <summary>`（[tasks.md](tasks.md)）
 - ハンドオフ: `handoff: YYYY-MM-DD <summary>`（[handoff.md](handoff.md)）
 
 ## 手動で commit / push する場合

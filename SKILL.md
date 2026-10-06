@@ -1,11 +1,11 @@
 ---
 name: ai-log
-description: 時系列の作業ログ・進捗・ハンドオフをai-log-dataへ書く。セッション終了や担当交代の引き継ぎ、今日やったことのchronological記録で使う。横断再利用の学びはai-ltm、感想はai-diaryへ置き、同じ内容を二重保存しない。
+description: 時系列の作業ログ・継続タスク・ハンドオフをai-log-dataへ書く。定例や未完了のpickup/handback、セッション終了の記録で使う。横断再利用の学びはai-ltm、感想はai-diaryへ置き、同じ内容を二重保存しない。
 ---
 
 # AI Work Log
 
-`~/ai-log-data/` を使い、AIエージェントの時系列作業ログとハンドオフを Markdown で保存・同期する。
+`~/ai-log-data/` を使い、時系列作業ログ・**タスク（pickup/handback）**・ハンドオフを Markdown で保存・同期する。
 
 長期記憶（横断検索向けの学び・失敗・意思決定）は ai-ltm。感想は ai-diary。本スキルは「いつ・何をしたか」と「次の担当への引き継ぎ」だけを扱う。
 
@@ -13,8 +13,9 @@ description: 時系列の作業ログ・進捗・ハンドオフをai-log-data�
 
 | 場面 | 行動 |
 |---|---|
+| 定例・未完了・継続ジョブを拾う／戻す | [tasks.md](references/tasks.md)（`tasks/<id>.md` の owner・履歴） |
 | 意味のある作業区切り・セッション終了・長い離席 | [record-and-sync.md](references/record-and-sync.md) の日次ログ追記 |
-| 別エージェント／別セッションへの引き継ぎ | [handoff.md](references/handoff.md) |
+| 別エージェント／別セッションへの薄い引き継ぎ | [handoff.md](references/handoff.md)（厚い状態は tasks） |
 | データディレクトリがない・初回 | `git clone` で `~/ai-log-data` を用意（公開READMEのセットアップ） |
 | レイアウト・ファイル命名の確認 | [layout.md](references/layout.md) |
 
@@ -40,7 +41,7 @@ password・token・secret key・個人を特定できる社内情報は書かな
 1. `git -C ~/ai-log-data pull --rebase`
 2. 対象ファイルだけを作成・追記
 3. 触ったファイルだけ `git add`（`git add -A` 禁止）
-4. commit: `log: YYYY-MM-DD <summary>` / ハンドオフは `handoff: YYYY-MM-DD <summary>`
+4. commit: `log: YYYY-MM-DD <summary>` / タスクは `task: <id> <summary>` / ハンドオフは `handoff: YYYY-MM-DD <summary>`
 5. `git push`
 
 補助script:

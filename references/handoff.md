@@ -8,7 +8,7 @@
 - 長い離席の前に、再開条件を残す必要がある
 - 日次ログだけでは次の担当が再開できない
 
-単なる進捗メモは日次ログ（[record-and-sync.md](record-and-sync.md)）へ。横断で再利用する学びは ai-ltm へ。
+単なる進捗メモは日次ログ（[record-and-sync.md](record-and-sync.md)）へ。**継続する仕事の状態は [tasks.md](tasks.md)（`tasks/<id>.md`）へ。** 横断で再利用する学びは ai-ltm へ。ハンドオフファイルは薄いポインタでよい。
 
 ## ファイル
 
